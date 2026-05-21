@@ -1,9 +1,4 @@
-﻿using ModelingToolkit.Core;
-using SharpGLTF.Geometry;
-using SharpGLTF.Geometry.VertexTypes;
-using SharpGLTF.Materials;
-using SharpGLTF.Scenes;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace ModelingToolkit.Formats.MtGltf
 {
@@ -29,10 +24,12 @@ namespace ModelingToolkit.Formats.MtGltf
                 List<ImageBuilder> imgBuilders = new List<ImageBuilder>();
                 for (int j = 0; j < mtModel.Materials.Count; j++)
                 {
-                    using (MemoryStream memStream = new MemoryStream())
+                    var bmp = mtModel.Materials[j].DiffuseTextureBitmap;
+                    if (bmp != null)
                     {
-                        mtModel.Materials[j].DiffuseTextureBitmap.Save(memStream, System.Drawing.Imaging.ImageFormat.Png);
-                        imgBuilders.Add(ImageBuilder.From(new SharpGLTF.Memory.MemoryImage(memStream.ToArray())));
+                        using var image = SKImage.FromBitmap(bmp);
+                        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+                        imgBuilders.Add(ImageBuilder.From(new SharpGLTF.Memory.MemoryImage(data.ToArray())));
                     }
                 }
 

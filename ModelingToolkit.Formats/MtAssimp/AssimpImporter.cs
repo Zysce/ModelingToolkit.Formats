@@ -1,6 +1,4 @@
-﻿using ModelingToolkit.Core;
-
-namespace ModelingToolkit.Formats.MtAssimp
+﻿namespace ModelingToolkit.Formats.MtAssimp
 {
     public class AssimpImporter
     {
@@ -42,13 +40,11 @@ namespace ModelingToolkit.Formats.MtAssimp
                 MtMaterial material = new MtMaterial();
                 material.Name = assimpScene.Materials[i].Name;
                 string textureFilepath = assimpScene.Materials[i].TextureDiffuse.FilePath;
-                string[] pathSplit = textureFilepath.Split("\\");
-                textureFilepath = pathSplit[pathSplit.Length - 1];
-                textureFilepath = Path.Combine(directory, textureFilepath);
-                textureFilepath += ".png";
+                string textureFileName = Path.GetFileName(textureFilepath);
+                textureFilepath = Path.Combine(directory, textureFileName + ".png");
 
                 material.DiffuseTextureFileName = textureFilepath;
-                material.DiffuseTextureBitmap = new System.Drawing.Bitmap(textureFilepath);
+                material.DiffuseTextureBitmap = SKBitmap.Decode(textureFilepath);
 
                 model.Materials.Add(material);
             }

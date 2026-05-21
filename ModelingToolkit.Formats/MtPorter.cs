@@ -1,8 +1,4 @@
-﻿using ModelingToolkit.Core;
-using SharpGLTF.Scenes;
-using System.Drawing.Imaging;
-
-namespace ModelingToolkit.Formats
+﻿namespace ModelingToolkit.Formats
 {
     public class MtPorter
     {
@@ -78,7 +74,14 @@ namespace ModelingToolkit.Formats
             for (int i = 0; i < model.Materials.Count; i++)
             {
                 string textureFilePath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(model.Materials[i].DiffuseTextureFileName) + ".png");
-                model.Materials[i].DiffuseTextureBitmap.Save(textureFilePath, ImageFormat.Png);
+                var bmp = model.Materials[i].DiffuseTextureBitmap;
+                if (bmp != null)
+                {
+                    using var image = SKImage.FromBitmap(bmp);
+                    using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+                    using var fs = File.OpenWrite(textureFilePath);
+                    data.SaveTo(fs);
+                }
             }
         }
     }
